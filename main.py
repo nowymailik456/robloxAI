@@ -53,19 +53,26 @@ def home():
             print(f"Przetwarzam obraz na mozaikę o wymiarach {MOSAIC_SIZE[0]}x{MOSAIC_SIZE[1]}...")
             
             image_to_process = Image.open(io.BytesIO(image_data_bytes))
-    
-            resized_image = image_to_process.resize(MOSAIC_SIZE, Image.Resampling.LANCZOS)
-    
+
+
+            image_in_rgb = image_to_process.convert('RGB')
+            
+            # Dalsze operacje wykonujemy na obrazie skonwertowanym do RGB
+            resized_image = image_in_rgb.resize(MOSAIC_SIZE, Image.Resampling.LANCZOS)
+            
+            # getdata() na obrazie RGB zawsze zwróci listę krotek (R,G,B)
             pixel_data = list(resized_image.getdata())
+            
             flat_pixel_list = []
-            for r, g, b in pixel_data:
-                flat_pixel_list.extend([r, g, b])
-    
+            # Ta pętla jest teraz bezpieczna, bo 'pixel' zawsze będzie krotką (R, G, B).
+            for pixel in pixel_data:
+                flat_pixel_list.extend(pixel) # Rozszerzamy listę o wartości z krotki (r, g, b)
+            
             return jsonify({
                 "status": "SUCCESS",
                 "width": MOSAIC_SIZE[0],
                 "height": MOSAIC_SIZE[1],
-                "pixels": flat_pixel_list # To jest to, co wysyłamy do Robloxa
+                "pixels": flat_pixel_list
             })
         except Exception as e:
             # Jeśli cokolwiek pójdzie nie tak z Google AI, zobaczymy błąd w logach
