@@ -37,7 +37,7 @@ def home():
             model="gemini-2.0-flash-preview-image-generation",
             contents=txt,
             config=types.GenerateContentConfig(
-            response_modalities=['IMAGE']
+            response_modalities=['TEXT', 'IMAGE']
                 )
             )
             
