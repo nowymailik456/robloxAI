@@ -13,8 +13,8 @@ client = genai.Client(api_key=api_key)
 def image_to_pixel_data(image, scale_percentage=25):
     """Konwertuje obrazek na dane pixeli"""
     width, height = image.size
-    new_width = max(1, int(width * scale_percentage / 100))
-    new_height = max(1, int(height * scale_percentage / 100))
+    new_width = max(1, int(width))
+    new_height = max(1, int(height))
     
     resized_image = image.resize((new_width, new_height))
     pixels = resized_image.load()
