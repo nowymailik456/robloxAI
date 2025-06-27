@@ -41,39 +41,37 @@ def home():
                 )
             )
             
-            image_data_bytes = None
-            for part in response.candidates[0].content.parts:
-                if part.inline_data and part.inline_data.data:
-                    image_data_bytes = part.inline_data.data
-                    break
-            
-            if not image_data_bytes:
-                return jsonify({"status": "ERROR", "text": "Nie udało się wygenerować obrazu."}), 500
+            if not response.candidates or not response.candidates[0].content.parts:
+                return jsonify({"status": "ERROR", "text": "Nie udało się wygenerować obrazu (brak kandydatów)."}), 500
+    
+            image_part = response.candidates[0].content.parts[0]
+            if 'image' not in image_part.mime_type:
+                 return jsonify({"status": "ERROR", "text": "Odpowiedź AI nie zawierała obrazu."}), 500
+    
+            image_data_bytes = image_part.inline_data.data
             
             print(f"Przetwarzam obraz na mozaikę o wymiarach {MOSAIC_SIZE[0]}x{MOSAIC_SIZE[1]}...")
             
             image_to_process = Image.open(io.BytesIO(image_data_bytes))
-
-
             image_in_rgb = image_to_process.convert('RGB')
             
-            # Dalsze operacje wykonujemy na obrazie skonwertowanym do RGB
             resized_image = image_in_rgb.resize(MOSAIC_SIZE, Image.Resampling.LANCZOS)
             
-            # getdata() na obrazie RGB zawsze zwróci listę krotek (R,G,B)
             pixel_data = list(resized_image.getdata())
             
-            flat_pixel_list = []
-            # Ta pętla jest teraz bezpieczna, bo 'pixel' zawsze będzie krotką (R, G, B).
-            for pixel in pixel_data:
-                flat_pixel_list.extend(pixel) # Rozszerzamy listę o wartości z krotki (r, g, b)
+            flat_pixel_list_rgba = []
+            # KLUCZOWA ZMIANA: Dodajemy kanał Alfa (A) do każdego piksela
+            # Roblox EditableImage wymaga formatu RGBA (4 wartości na piksel)
+            for r, g, b in pixel_data:
+                flat_pixel_list_rgba.extend([r, g, b, 255]) # 255 = w pełni nieprzezroczysty
             
             return jsonify({
                 "status": "SUCCESS",
                 "width": MOSAIC_SIZE[0],
                 "height": MOSAIC_SIZE[1],
-                "pixels": flat_pixel_list
+                "pixels": flat_pixel_list_rgba # Wysyłamy listę RGBA
             })
+
         except Exception as e:
             # Jeśli cokolwiek pójdzie nie tak z Google AI, zobaczymy błąd w logach
             print(f"Wystąpił błąd podczas komunikacji z Google AI: {e}")
