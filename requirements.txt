@@ -2,5 +2,4 @@ Flask
 gunicorn
 google-generativeai
 google-genai
-google-generativeai-v1beta
 Pillow
