@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, jsonify
 from PIL import Image
 import io
-import google.generativeai as genai
+import google import genai
 
 # Inicjalizacja aplikacji Flask
 app = Flask(__name__)
