@@ -27,4 +27,3 @@ def home():
     return jsonify({"status": "OK", "text": ""})
 
 
-app.run(debug=False,port=3000,host="0.0.0.0")
