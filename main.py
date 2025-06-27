@@ -34,7 +34,7 @@ def home():
             # Tworzymy model, używając poprawnej i aktualnej nazwy
             response = client.models.generate_content(
             model="gemini-2.0-flash-preview-image-generation",
-            contents=contents,
+            contents=txt,
             config=types.GenerateContentConfig(
             response_modalities=['IMAGE']
                 )
