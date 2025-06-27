@@ -1,6 +1,11 @@
 import os
 from flask import Flask, request, jsonify
+from PIL import Image
+import io
 import google.generativeai as genai
+from google.generativeai.client import _client_manager
+from google.generativeai.v1beta import content_pb2
+from google.generativeai.v1beta import generative_service_pb2
 
 # Inicjalizacja aplikacji Flask
 app = Flask(__name__)
