@@ -3,7 +3,6 @@ from flask import Flask, request, jsonify
 from PIL import Image
 import io
 import google.generativeai as genai
-from google.generativeai.client import _client_manager
 
 # Inicjalizacja aplikacji Flask
 app = Flask(__name__)
