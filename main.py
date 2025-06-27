@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 from PIL import Image
 import io
 from google import genai
+from google.genai import types
 
 # Inicjalizacja aplikacji Flask
 app = Flask(__name__)
