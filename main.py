@@ -67,8 +67,8 @@ def home():
                 "status": "SUCCESS",
                 "width": MOSAIC_SIZE[0],
                 "height": MOSAIC_SIZE[1],
-                "pixel
-
+                "pixels": flat_pixel_list # To jest to, co wysyłamy do Robloxa
+            })
         except Exception as e:
             # Jeśli cokolwiek pójdzie nie tak z Google AI, zobaczymy błąd w logach
             print(f"Wystąpił błąd podczas komunikacji z Google AI: {e}")
