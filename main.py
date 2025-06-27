@@ -7,7 +7,7 @@ from google.genai import types
 
 # Inicjalizacja aplikacji Flask
 app = Flask(__name__)
-
+MOSAIC_SIZE = 1024
 # --- Konfiguracja Klucza API ---
 # Bezpiecznie pobieramy klucz API ze zmiennych środowiskowych na Renderze
 # Używamy .get(), aby aplikacja nie wywaliła się, jeśli klucza nie ma
@@ -43,9 +43,9 @@ def home():
             
             image_data_bytes = None
             for part in response.candidates[0].content.parts:
-                if part.inline_data.data:
+                if part.inline_data and part.inline_data.data:
                     image_data_bytes = part.inline_data.data
-                    break # Znaleźliśmy dane obrazu, przerywamy pętlę
+                    break
             
             if not image_data_bytes:
                 return jsonify({"status": "ERROR", "text": "Nie udało się wygenerować obrazu."}), 500
