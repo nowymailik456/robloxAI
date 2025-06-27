@@ -35,19 +35,39 @@ def home():
 
         try:
             # Tworzymy model, używając poprawnej i aktualnej nazwy
-            model = genai.GenerativeModel('gemini-1.5-flash-latest')
+            response = client.models.generate_content(
+            model="gemini-2.0-flash-preview-image-generation",
+            contents=contents,
+            config=types.GenerateContentConfig(
+            response_modalities=['IMAGE']
+                )
+            )
             
-            # Generujemy odpowiedź - to jest skomplikowany obiekt
-            response_object = model.generate_content(txt)
+            image_data_bytes = None
+            for part in response.candidates[0].content.parts:
+                if part.inline_data.data:
+                    image_data_bytes = part.inline_data.data
+                    break # Znaleźliśmy dane obrazu, przerywamy pętlę
             
-            # =======================================================
-            # === NAJWAŻNIEJSZA ZMIANA JEST TUTAJ ===
-            # Wyciągamy samą treść tekstową z obiektu odpowiedzi
-            generated_text = response_object.text
-            # =======================================================
+            if not image_data_bytes:
+                return jsonify({"status": "ERROR", "text": "Nie udało się wygenerować obrazu."}), 500
             
-            # Zwracamy do Robloxa już tylko prosty tekst
-            return jsonify({"status": "OK", "text": generated_text})
+            print(f"Przetwarzam obraz na mozaikę o wymiarach {MOSAIC_SIZE[0]}x{MOSAIC_SIZE[1]}...")
+            
+            image_to_process = Image.open(io.BytesIO(image_data_bytes))
+    
+            resized_image = image_to_process.resize(MOSAIC_SIZE, Image.Resampling.LANCZOS)
+    
+            pixel_data = list(resized_image.getdata())
+            flat_pixel_list = []
+            for r, g, b in pixel_data:
+                flat_pixel_list.extend([r, g, b])
+    
+            return jsonify({
+                "status": "SUCCESS",
+                "width": MOSAIC_SIZE[0],
+                "height": MOSAIC_SIZE[1],
+                "pixel
 
         except Exception as e:
             # Jeśli cokolwiek pójdzie nie tak z Google AI, zobaczymy błąd w logach
