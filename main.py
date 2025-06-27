@@ -10,12 +10,7 @@ app = Flask(__name__)
 # Używamy .get(), aby aplikacja nie wywaliła się, jeśli klucza nie ma
 api_key = os.environ.get('api_key') 
 
-# Sprawdzamy, czy klucz API został znaleziony i konfigurujemy bibliotekę Google
-if api_key:
-    genai.configure(api_key=api_key)
-else:
-    # Ten komunikat zobaczysz w logach na Renderze, jeśli zapomnisz dodać klucza
-    print("BŁĄD KRYTYCZNY: Zmienna środowiskowa 'API_KEY' nie jest ustawiona!")
+client = genai.Client(api_key=api_key)
 
 
 # --- Główny punkt wejścia do API ---
